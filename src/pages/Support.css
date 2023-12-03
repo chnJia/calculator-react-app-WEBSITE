@@ -19,6 +19,11 @@ input {
     color: white !important;
 }
 
+.border-custom:focus {
+    border-color: rgb(255, 191, 0) !important;
+    box-shadow: none !important;
+}
+
 .form-label {
     font-size: 20px;
 }

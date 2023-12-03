@@ -3,73 +3,128 @@ import { Col, Container, Row } from "react-bootstrap"
 import { CalculatorOperationButton } from "./CalculatorOperationButton"
 import { CalculatorButton } from "./CalculatorButton"
 import { useNavigate } from "react-router-dom"
-import { Support } from "../pages/Support"
+import "./Calculator.css"
 
 export function Calculator() {
     const outputContainerStyle: React.CSSProperties = {
         width: "100%",
         textAlign: "right",
         height: "2em",
-        padding: '16px',
+        padding: "16px",
         fontSize: "48px",
         overflow: "hidden",
     }
 
     const calculatorBaseStyle: React.CSSProperties = {
-        padding: "16px",
+        padding: "10px",
         marginTop: "32px",
         backgroundColor: "rgb(115, 115, 115)",
         color: "white",
-        maxWidth: "350px"
+        maxWidth: "350px",
     }
-
-    const [currNumber, setCurrNum] = useState("0")
-    const [operator, setOperator] = useState("")
-    const [prevNumber, setPrevNum] = useState("")
+    const [currNumber, setCurrNum] = useState("0");
+    const [operator, setOperator] = useState("");
+    const [prevNumber, setPrevNum] = useState("");
+    const [history, setHistory] = useState<string[]>([]);
 
     const setDigit = (digit: string) => {
-        if (currNumber === "0" || operator === "=") {
-            setCurrNum(digit)
+        if (operator === "=") {
+            setCurrNum(digit);
+            setPrevNum("");
+            setOperator("");
+        } else if (currNumber === "0" || operator === "=") {
+            setCurrNum(digit);
         } else {
-            setCurrNum(`${currNumber}${digit}`)
+            setCurrNum(`${currNumber}${digit}`);
         }
     }
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const navigateToSupport = () => {
-        // Use the navigate function to go to the Support page
         navigate("/Support");
-    };
+    }
 
     const selectOperator = (operator: string) => {
-        operator === "?" ? navigate("/Support") : (
-            setOperator(operator)
-        )
+        if (operator === "?") {
+            navigateToSupport();
+        } else if (operator === "=") {
+            calculate();
+            setOperator("");
+        } else {
+            // If there's a previous number and current number, perform the calculation
+            if (prevNumber !== "" && currNumber !== "") {
+                calculate();
+            }
+            setOperator(operator);
+            setPrevNum(currNumber); // Save the current number as the previous number
+            setCurrNum(""); // Clear the current number for the next input
+        }
     }
 
     const clearAll = () => {
-        setCurrNum("0")
-        setOperator("")
-        setPrevNum("")
+        setCurrNum("0");
+        setOperator("");
+        setPrevNum("");
     }
 
     const del = () => {
-        currNumber.length > 1 ?
-            setCurrNum(currNumber.slice(0, -1)) : (
-                setCurrNum("0")
-            )
+        currNumber.length > 1
+            ? setCurrNum(currNumber.slice(0, -1))
+            : setCurrNum("0");
     }
 
     const calculate = () => {
-        let result
+        if (!isNaN(parseFloat(prevNumber)) && !isNaN(parseFloat(currNumber))) {
+            let result;
 
+            switch (operator) {
+                case "+":
+                    result = parseFloat(prevNumber) + parseFloat(currNumber);
+                    break;
+                case "-":
+                    result = parseFloat(prevNumber) - parseFloat(currNumber);
+                    break;
+                case "/":
+                    result = parseFloat(prevNumber) / parseFloat(currNumber);
+                    break;
+                case "x":
+                    result = parseFloat(prevNumber) * parseFloat(currNumber);
+                    break;
+                default:
+                    return;
+            }
+            setHistory([...history, `${result}`]);
+            setCurrNum(result.toString());
+            setOperator("");
+            setPrevNum("");
+        }
     }
 
     return (
         <>
             <Container className="mt-4" style={calculatorBaseStyle}>
-                Hello
+                <Row>
+                    <Col>
+                        <div className="history" style={{
+                            color: "white",
+                            marginTop: "10px",
+                            overflow: "auto",
+                            maxHeight: "120px",
+                        }}>
+                            <ul style={{
+                                listStyleType: "none",
+                                padding: "0px",
+                                marginLeft: "5px",
+                                fontSize: "32px",
+                            }}>
+                                {history.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </Col>
+                </Row>
                 <Row>
                     <Col>
                         <div style={outputContainerStyle}>
@@ -173,7 +228,7 @@ export function Calculator() {
                     />
                     <CalculatorOperationButton
                         operator="="
-                        selectOperator={selectOperator}
+                        selectOperator={calculate}
                         selectedOperator={operator}
                     />
                 </Row>

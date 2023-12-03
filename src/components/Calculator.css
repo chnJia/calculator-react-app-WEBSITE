@@ -1,0 +1,8 @@
+.history::-webkit-scrollbar {
+    display: none;
+}
+
+.history {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
