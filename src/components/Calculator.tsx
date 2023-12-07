@@ -22,82 +22,86 @@ export function Calculator() {
         color: "white",
         maxWidth: "350px",
     }
-    const [currNumber, setCurrNum] = useState("0");
-    const [operator, setOperator] = useState("");
-    const [prevNumber, setPrevNum] = useState("");
-    const [history, setHistory] = useState<string[]>([]);
+    const [currNumber, setCurrNum] = useState("0")
+    const [operator, setOperator] = useState("")
+    const [prevNumber, setPrevNum] = useState("")
+    const [history, setHistory] = useState<string[]>([])
 
     const setDigit = (digit: string) => {
         if (operator === "=") {
-            setCurrNum(digit);
-            setPrevNum("");
-            setOperator("");
+            setCurrNum(digit)
+            setPrevNum("")
+            setOperator("")
         } else if (currNumber === "0" || operator === "=") {
-            setCurrNum(digit);
+            setCurrNum(digit)
         } else {
             setCurrNum(`${currNumber}${digit}`);
         }
     }
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const navigateToSupport = () => {
-        navigate("/Support");
+        navigate("/Support")
     }
 
     const selectOperator = (operator: string) => {
         if (operator === "?") {
-            navigateToSupport();
+            navigateToSupport()
         } else if (operator === "=") {
-            calculate();
-            setOperator("");
+            calculate()
+            setOperator("")
         } else {
-            // If there's a previous number and current number, perform the calculation
             if (prevNumber !== "" && currNumber !== "") {
-                calculate();
+                calculate()
             }
-            setOperator(operator);
-            setPrevNum(currNumber); // Save the current number as the previous number
-            setCurrNum(""); // Clear the current number for the next input
+            setOperator(operator)
+            setPrevNum(currNumber)
+            setCurrNum("")
         }
     }
 
     const clearAll = () => {
-        setCurrNum("0");
-        setOperator("");
-        setPrevNum("");
+        setCurrNum("0")
+        setOperator("")
+        setPrevNum("")
     }
 
     const del = () => {
         currNumber.length > 1
             ? setCurrNum(currNumber.slice(0, -1))
-            : setCurrNum("0");
+            : setCurrNum("0")
     }
 
     const calculate = () => {
         if (!isNaN(parseFloat(prevNumber)) && !isNaN(parseFloat(currNumber))) {
-            let result;
+            let result: number | string = 0
 
             switch (operator) {
                 case "+":
-                    result = parseFloat(prevNumber) + parseFloat(currNumber);
-                    break;
+                    result = parseFloat(prevNumber) + parseFloat(currNumber)
+                    break
                 case "-":
-                    result = parseFloat(prevNumber) - parseFloat(currNumber);
-                    break;
+                    result = parseFloat(prevNumber) - parseFloat(currNumber)
+                    break
                 case "/":
-                    result = parseFloat(prevNumber) / parseFloat(currNumber);
-                    break;
+                    const checkNum = parseFloat(currNumber)
+                    if (checkNum !== 0) {
+                        result = parseFloat(prevNumber) / parseFloat(currNumber)
+                    } else {
+                        result = "Err"
+                    }
+                    break
                 case "x":
-                    result = parseFloat(prevNumber) * parseFloat(currNumber);
-                    break;
+                    result = parseFloat(prevNumber) * parseFloat(currNumber)
+                    break
                 default:
-                    return;
+                    return
             }
-            setHistory([...history, `${result}`]);
-            setCurrNum(result.toString());
-            setOperator("");
-            setPrevNum("");
+            setHistory([...history, `${result}`])
+            setCurrNum(result.toString())
+            setOperator("")
+            setPrevNum("")
         }
     }
 

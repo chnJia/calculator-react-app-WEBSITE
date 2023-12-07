@@ -34,7 +34,7 @@ export function Support() {
     }
 
     const sendTicket = (e: React.FormEvent) => {
-        e.preventDefault();
+        e.preventDefault()
         if (areRequiredFieldsFilled()) {
             generateRandNum()
             setFormSubmitted(true)
